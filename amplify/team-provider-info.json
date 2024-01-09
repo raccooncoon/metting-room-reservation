@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mettingroomreservati-dev-225852-authRole",
+      "UnauthRoleArn": "arn:aws:iam::294972439816:role/amplify-mettingroomreservati-dev-225852-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::294972439816:role/amplify-mettingroomreservati-dev-225852-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-mettingroomreservati-dev-225852-deployment",
+      "UnauthRoleName": "amplify-mettingroomreservati-dev-225852-unauthRole",
+      "StackName": "amplify-mettingroomreservati-dev-225852",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:294972439816:stack/amplify-mettingroomreservati-dev-225852/393788c0-aef7-11ee-9adf-067d143671ac",
+      "AmplifyAppId": "d8k6x3jox6hpa"
+    }
+  }
+}
