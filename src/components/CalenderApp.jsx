@@ -7,9 +7,17 @@ import MeetingDialog from "./MeetingDialog.jsx";
 import {useRef, useState} from "react";
 import {v4 as uuidv4} from 'uuid'
 import dayjs from "dayjs";
+import {generateClient} from "aws-amplify/api";
+import {
+  createReservation,
+  deleteReservation,
+  updateReservation
+} from "../graphql/mutations";
 
-const CalenderApp = () => {
-  const [dateEvents] = useState([]);
+const client = generateClient()
+
+const CalenderApp = ({initReservations}) => {
+  console.log("initReservations =>> ", initReservations);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedInfo, setSelectedInfo] = useState(null);
@@ -22,7 +30,9 @@ const CalenderApp = () => {
   // const params = new URLSearchParams(location.search);
   // const meetingRoom = params.get('room').toUpperCase() || 'DefaultRoomNumber';
 
-  const handleDateSelect = (selectInfo) => {
+
+
+  const handleDateSelect = async (selectInfo) => {
 
     if (dayjs(selectInfo.startStr).isBefore(dayjs())) {
       alert('현재 날짜 또는 시간 이전으로는 예약할 수 없습니다.');
@@ -33,18 +43,17 @@ const CalenderApp = () => {
 
     setIsModalOpen(true);
     setSelectedInfo(selectInfo);
+
   };
 
   const handleDialogClose = () => {
-    console.log("handleDialogClose")
     setIsModalOpen(false);
     setIsEditModalOpen(false);
     setSelectedInfo(null);
     setSelectedEvent(null);
   };
 
-  const handleDialogDelete = () => {
-    console.log("handleDialogDelete")
+  const handleDialogDelete = async () => {
 
     const calendarApi = calendarRef.current.getApi();
 
@@ -60,15 +69,11 @@ const CalenderApp = () => {
   };
 
   const handleDialogSave = (data) => {
-    console.log("handleDialogSave")
-    console.log(data)
 
     const calendarApi = calendarRef.current.getApi();
-
     if (selectedEvent) {
       // If there is a selected event, update its properties
       selectedEvent.setProp('title', data.meetingContent);
-      selectedEvent.setExtendedProp('meetingContent', data.meetingContent);
       selectedEvent.setExtendedProp('attendees', data.attendees);
       selectedEvent.setStart(data.startStr);
       selectedEvent.setEnd(data.endStr);
@@ -80,7 +85,7 @@ const CalenderApp = () => {
         attendees: data.attendees,
         start: data.startStr,
         end: data.endStr,
-        allDay: selectedInfo.allDay,
+        allDay: false,
         extendedProps: {
           attendees: data.attendees,
         },
@@ -92,25 +97,60 @@ const CalenderApp = () => {
 
   const handleEventClick = (clickInfo) => {
     setSelectedEvent(clickInfo.event);
-    console.log("clickInfo.event =>> ", clickInfo.event);
-
     setIsEditModalOpen(true);
   };
 
-  const handleEventAdd = () => {
-    console.log("handleEventAdd")
+  const handleEventAdd = async (data) => {
+    await client.graphql({
+      query: createReservation,
+      variables: {
+        input: {
+          "id": data.event.id,
+          "meetingContent": data.event.title,
+          "attendees": data.event.extendedProps.attendees,
+          "startStr": dayjs(data.event.startStr).toISOString(),
+          "endStr": dayjs(data.event.endStr).toISOString()
+        }
+      }
+    });
+
   }
-  const handleEventRemove = () => {
-    console.log("handleEventRemove")
+  const handleEventRemove = async (data) => {
+    await client.graphql({
+      query: deleteReservation,
+      variables: {
+        input: {
+          id: data.event.id
+        }
+      }
+    });
+
   }
-  const handleEventChange = () => {
-    console.log("handleEventChange")
+  const handleEventChange = async (data) => {
+    await client.graphql({
+      query: updateReservation,
+      variables: {
+        input: {
+          "id": data.event.id,
+          "meetingContent": data.event.title,
+          "attendees": data.event.extendedProps.attendees,
+          "startStr": dayjs(data.event.startStr).toISOString(),
+          "endStr": dayjs(data.event.endStr).toISOString()
+        }
+      }
+    });
   }
+
+  // eventsSet 콜백 함수 정의
+  const handleEventsSet = (events) => {
+    console.log('이벤트가 설정되었습니다:', events);
+    // 추가적인 작업 수행 가능
+  };
 
   return (
       <div className='demo-app min-h-screen flex justify-center items-center'>
         <div className='demo-app-main mx-auto max-w-[1200px] min-h-[800px]  '>
-          <h1 className="text-3xl font-semibold mb-4 text-center p-8">- {meetingRoom} 호
+          <h1 className="text-3xl font-semibold mb-4 text-center pb-4">- {meetingRoom} 호
             회의실 예약 📅 -</h1>
           <FullCalendar
               ref={calendarRef}
@@ -122,17 +162,17 @@ const CalenderApp = () => {
                 right: 'today'
               }}
               initialView='timeGridWeek'
+              allDaySlot={false}
               editable={true}
               selectable={true}
               selectMirror={true}
               dayMaxEvents={false}
               weekends={false}
               contentHeight="auto" // 콘텐츠 높이를 자동으로 조절
-              initialEvents={dateEvents} // alternatively, use the `events` setting to fetch from a feed
+              initialEvents={initReservations} // alternatively, use the `events` setting to fetch from a feed
               select={handleDateSelect}
               //eventContent={renderEventContent} // custom render function
-              //eventClick={this.handleEventClick}
-              //eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+              eventsSet={handleEventsSet} // called after events are initialized/added/changed/removed
               locale={koLocale}  // 한국어 locale 적용
               nowIndicator={true}  // 현재 시간 표시 활성화
               scrollTime={dayjs().format('HH:mm')} // 현재 시간 포커싱
@@ -180,5 +220,3 @@ const CalenderApp = () => {
 };
 
 export default CalenderApp;
-
-

@@ -1,0 +1,7 @@
+type Reservation @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  meetingContent: String
+  attendees: String
+  startStr: AWSDateTime
+  endStr: AWSDateTime
+}
