@@ -82,7 +82,6 @@ const CalenderApp = ({initReservations}) => {
       const newEvent = {
         id: eventId,
         title: data.meetingContent,
-        attendees: data.attendees,
         start: data.startStr,
         end: data.endStr,
         allDay: false,
