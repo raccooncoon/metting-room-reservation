@@ -65,12 +65,14 @@ const MeetingDialog = ({isOpen, onClose, onSave, onDelete, data}) => {
                   value={dayjs(value)}
                   format="YYYY년 M월 D일"
                   onChange={(newDate) => handleDateTimeChange(dayjs(newDate).format('YYYY-MM-DD HH:mm:ss'), type)}
+                  readOnly
               />
           ) : (
               <TimePicker
                   label={label}
                   value={dayjs(value)}
                   onChange={(newTime) => handleDateTimeChange(dayjs(newTime).format('YYYY-MM-DD HH:mm:ss'), type)}
+                  readOnly
               />
           )}
         </LocalizationProvider>
