@@ -24,13 +24,13 @@ const CalenderApp = ({initReservations}) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const calendarRef = useRef(null);
 
-  const meetingRoom = import.meta.env.VITE_REACT_APP_MEETING_ROOM
-      || 'DefaultRoomNumber';
-  // const location = useLocation();
-  // const params = new URLSearchParams(location.search);
-  // const meetingRoom = params.get('room').toUpperCase() || 'DefaultRoomNumber';
+  const getGitBranch = () => {
+    // 이 함수는 브라우저의 개발자 도구에서 보이는 환경 변수 중
+    // REACT_APP_GIT_BRANCH 값을 반환합니다.
+    return import.meta.env.REACT_APP_GIT_BRANCH || 'DefaultBranch';
+  };
 
-
+  const meetingRoom = getGitBranch();
 
   const handleDateSelect = async (selectInfo) => {
 
