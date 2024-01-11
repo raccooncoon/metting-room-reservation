@@ -24,19 +24,12 @@ const CalenderApp = ({initReservations}) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const calendarRef = useRef(null);
 
-  const getGitBranch = () => {
-    // 이 함수는 브라우저의 개발자 도구에서 보이는 환경 변수 중
-    // REACT_APP_GIT_BRANCH 값을 반환합니다.
-    console.log("import.meta.env =>> ", import.meta.env);
-    return import.meta.env.AWS_BRANCH || 'DefaultBranch';
-  };
-
-  const meetingRoom = getGitBranch();
+  const meetingRoom = import.meta.env.VITE_REACT_APP_MEETING_ROOM || 'DefaultRoom'
 
   const handleDateSelect = async (selectInfo) => {
 
     if (dayjs(selectInfo.startStr).isBefore(dayjs())) {
-      alert('현재 날짜 또는 시간 이전으로는 예약할 수 없습니다.');
+      alert('현재 날짜 또는 시간 이전 으로는 예약할 수 없습니다.');
       setSelectedInfo(null);
       setSelectedEvent(null);
       return;
