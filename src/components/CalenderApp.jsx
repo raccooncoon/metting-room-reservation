@@ -27,7 +27,7 @@ const CalenderApp = ({initReservations}) => {
   const getGitBranch = () => {
     // 이 함수는 브라우저의 개발자 도구에서 보이는 환경 변수 중
     // REACT_APP_GIT_BRANCH 값을 반환합니다.
-    return import.meta.env.REACT_APP_GIT_BRANCH || 'DefaultBranch';
+    return import.meta.env.AWS_BRANCH || 'DefaultBranch';
   };
 
   const meetingRoom = getGitBranch();
